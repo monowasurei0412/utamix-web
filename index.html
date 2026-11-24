@@ -678,7 +678,7 @@ html.web #btnMobile { display:none !important; }
 <body>
 <main>
   <header class="topbar">
-    <div class="brand"><span class="logo">♪</span><h1>おまかせ<span>歌みた</span>MIX</h1><small class="ver">v4.11 ブラウザ版</small></div>
+    <div class="brand"><span class="logo">♪</span><h1>おまかせ<span>歌みた</span>MIX</h1><small class="ver">v4.11.1 ブラウザ版</small></div>
     <div class="modebar seg2" id="uiMode">
       <button data-m="easy"><b>🎤 かんたん</b><small>録音して、ボタン1つで仕上げる</small></button>
       <button data-m="ai" title="AIで音を調べて、処理を決めて、仕上がりを確かめます"><b>🤖 AI MIX</b><small>AIが調べて処理を決める</small></button>
@@ -7329,14 +7329,15 @@ window.UTAMIX_LIC = (() => {
   if (lic && !(lic.code && lic.device)) lic = null;
   function dev() { let d = ''; try { d = localStorage.getItem(DK) || ''; } catch (e) {} if (!/^[0-9a-f]{32}$/.test(d)) { d = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join(''); try { localStorage.setItem(DK, d); } catch (e) {} } return d; }
   async function call(q) { const r = await fetch(url, { method: 'POST', body: JSON.stringify(q), headers: { 'Content-Type': 'text/plain;charset=utf-8' } }); return r.json(); }
-  const WHY = { notfound: 'このコードは見つかりません。入力をまちがえていないか確かめてください。', used: 'このコードは、ほかの端末ですでに使われています。機種変更などのときは、BOOTH のメッセージでご連絡ください。', revoked: 'このコードは使えなくなっています。BOOTH のメッセージでご連絡ください。', bad: 'コードの形が正しくありません（UTA-XXXX-XXXX-XXXX）。', busy: '混み合っています。少し待ってからもう一度お試しください。', error: 'エラーが起きました。少し待ってからもう一度お試しください。' };
+  const WHY = { notfound: 'このコードは見つかりません。入力をまちがえていないか確かめてください。', used: 'このコードは、端末を移せる回数（5回）を使い切っています。BOOTH のメッセージでご連絡ください。', revoked: 'このコードは使えなくなっています。BOOTH のメッセージでご連絡ください。', bad: 'コードの形が正しくありません（UTA-XXXX-XXXX-XXXX）。', busy: '混み合っています。少し待ってからもう一度お試しください。', error: 'エラーが起きました。少し待ってからもう一度お試しください。' };
   async function redeem(code) {
     if (!(await getUrl())) return { ok: false, msg: 'まだコードの受付の準備ができていません。少し時間をおいてお試しください。' };
     if (!navigator.onLine) return { ok: false, msg: 'インターネットにつないでから入れてください（最初の1回だけ必要です）。' };
     let r; try { r = await call({ action: 'redeem', code, device: dev(), ua: /iPhone|iPad/.test(navigator.userAgent) ? 'iOS' : /Android/.test(navigator.userAgent) ? 'Android' : 'PC' }); } catch (e) { return { ok: false, msg: 'つながりませんでした。電波のよい所でもう一度お試しください。' }; }
     if (!r || !r.ok) return { ok: false, msg: WHY[r && r.reason] || WHY.error };
     lic = { code: r.code || code, device: dev(), at: Date.now(), checked: Date.now() }; try { localStorage.setItem(KEY, JSON.stringify(lic)); } catch (e) {}
-    return { ok: true, code: lic.code };
+    try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {} // ブラウザに「消さないで」と頼む(Android など)
+    return { ok: true, code: lic.code, moved: !!r.moved, left: r.left };
   }
   async function check(force) {
     if (!lic || !navigator.onLine || (!force && Date.now() - (lic.checked || 0) < 7 * 864e5) || !(await getUrl())) return;
@@ -7385,20 +7386,21 @@ window.WEBLIM = (() => {
   const box = document.createElement('div'); box.className = 'licbox'; note.appendChild(box);
   let gone = ''; try { gone = sessionStorage.getItem('utamix.licgone') || ''; sessionStorage.removeItem('utamix.licgone'); } catch (e) {}
   if (L.pro) {
+    try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
     box.innerHTML = '<b>🔓 製品版コード：有効</b>（' + L.lic.code.replace(/[<>&]/g, '') + '）　曲の最後まで・動画や m4a・詳細MIX・AI MIX が使えます。';
     note.classList.add('pro'); setTimeout(() => L.check(false), 3000); return;
   }
   box.innerHTML = (gone ? '<div class="licgone">この端末のコードは無効になりました（販売者が別の端末へ移したか、使えなくしたため）。</div>' : '') +
     '<button type="button" id="licOpen">🔑 製品版のコードを入れる</button><span class="licsub">パソコン版を買った方は、パソコン版の「📱 スマホ版」でコードを受け取れます。</span>' +
     '<div class="licform hide" id="licForm"><input id="licIn" placeholder="UTA-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" id="licGo">有効にする</button><div id="licMsg" class="licmsg" role="status"></div>' +
-    '<small>コードは1台の端末でだけ使えます。一度入れると、この端末では制限が外れたままになります（ブラウザのデータを消すと、もう一度入力が必要です）。</small></div>';
+    '<small>一度入れると、この端末ではもう入れなくて大丈夫です。同時に使えるのは1台だけで、機種変更などで別の端末に入れると、そちらへ移ります（5回まで）。iPhone は「ホーム画面に追加」してから、そこから開いて入れるのがおすすめです。</small></div>';
   const $l = id => document.getElementById(id);
   $l('licOpen').onclick = () => { $l('licForm').classList.toggle('hide'); $l('licIn').focus(); };
   const go = async () => {
     const v = $l('licIn').value.trim(); if (!v) return;
     $l('licGo').disabled = true; $l('licMsg').textContent = '確かめています…';
     const r = await L.redeem(v); $l('licGo').disabled = false;
-    if (r.ok) { $l('licMsg').textContent = '有効になりました。画面を読み込み直します…'; setTimeout(() => location.reload(), 800); }
+    if (r.ok) { $l('licMsg').textContent = r.moved ? 'この端末で有効になりました（前の端末では使えなくなります。あと ' + r.left + ' 回移せます）。画面を読み込み直します…' : '有効になりました。画面を読み込み直します…'; setTimeout(() => location.reload(), r.moved ? 2500 : 800); }
     else $l('licMsg').textContent = r.msg;
   };
   $l('licGo').onclick = go; $l('licIn').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
