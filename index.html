@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script>window.UTAMIX_WEB = true; document.documentElement.classList.add('web');</script>
+<script>window.UTAMIX_WEB = true; window.UTAMIX_LICENSE_URL = ""; document.documentElement.classList.add('web'); try { const l = JSON.parse(localStorage.getItem('utamix.lic') || 'null'); if (l && l.code && l.device) { window.UTAMIX_PRO = true; document.documentElement.classList.add('webpro'); } } catch (e) {}</script>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#1f1f1f">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -631,7 +631,7 @@
 /* v4.9 タッチ・スマホ */
 .tpmore { display:none; }
 html.touch canvas { touch-action:pan-y; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
-html.web #uiMode { display:none; }
+html.web:not(.webpro) #uiMode { display:none; }
 .webnote { display:none; }
 html.web .webnote { display:block; margin:0 0 12px; padding:10px 14px; border-radius:10px; background:#24324a; border:1px solid #3d5a85; color:#cfe0f7; font-size:13.5px; line-height:1.6; }
 html.web .webnote b { color:#fff; }
@@ -663,13 +663,22 @@ html.web .webnote b { color:#fff; }
 /* v4.10 ブラウザ版の制限のお知らせ */
 .weblimmsg { position:fixed; left:50%; top:12px; transform:translate(-50%,-140%); z-index:200; max-width:min(560px, calc(100vw - 24px)); box-sizing:border-box; padding:12px 16px; border-radius:10px; background:#3a2d12; border:1px solid #d9a441; color:#ffe2a8; font-size:14px; line-height:1.5; box-shadow:0 6px 24px #000a; transition:transform .25s; pointer-events:none; }
 .weblimmsg.on { transform:translate(-50%,0); }
-html.web #btnVid, html.web #vidWin { display:none !important; }
+html.web:not(.webpro) #btnVid, html.web:not(.webpro) #vidWin { display:none !important; }
+html.web #btnMobile { display:none !important; }
+/* v4.11 スマホ版コード */
+.licbox { margin-top:8px; } .licbox button { margin-right:8px; } .licsub { font-size:12.5px; color:#a9bedc; }
+.licform { margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; } .licform.hide { display:none; }
+.licform input { flex:1 1 220px; min-width:0; font:inherit; font-size:17px; letter-spacing:1px; padding:9px 12px; border-radius:8px; border:1px solid #3d5a85; background:#101826; color:#fff; text-transform:uppercase; }
+.licform small { flex-basis:100%; color:#a9bedc; } .licmsg { flex-basis:100%; color:#ffe2a8; min-height:1.2em; }
+.webnote.pro { background:#1f3a2c; border-color:#3f8a62; color:#cdeedb; } .licgone { color:#ffcf8a; margin-bottom:6px; }
+.mobcode { font-size:34px; font-weight:800; letter-spacing:2px; text-align:center; padding:18px; margin:12px 0; border-radius:12px; background:#15161c; border:2px dashed #4d8fd6; user-select:all; font-family:ui-monospace,Consolas,monospace; }
+.mobsteps { line-height:1.8; padding-left:22px; } .mobsteps code { background:#15161c; padding:2px 6px; border-radius:6px; }
 </style>
 </head>
 <body>
 <main>
   <header class="topbar">
-    <div class="brand"><span class="logo">♪</span><h1>おまかせ<span>歌みた</span>MIX</h1><small class="ver">v4.10 ブラウザ版</small></div>
+    <div class="brand"><span class="logo">♪</span><h1>おまかせ<span>歌みた</span>MIX</h1><small class="ver">v4.11 ブラウザ版</small></div>
     <div class="modebar seg2" id="uiMode">
       <button data-m="easy"><b>🎤 かんたん</b><small>録音して、ボタン1つで仕上げる</small></button>
       <button data-m="ai" title="AIで音を調べて、処理を決めて、仕上がりを確かめます"><b>🤖 AI MIX</b><small>AIが調べて処理を決める</small></button>
@@ -682,6 +691,7 @@ html.web #btnVid, html.web #vidWin { display:none !important; }
       <button id="btnTips" title="つまみの下に説明を表示する／しまう（各項目の ？ でも1つずつ見られます）">💬 説明</button>
       <button id="btnHelp" title="使い方とキーボードの操作">？ 使い方</button>
       <button id="btnSupport" title="バージョン・診断レポート・設定のリセット">🛟 サポート</button>
+      <button id="btnMobile" title="スマホでも使えるコードを受け取ります（パソコン1台につき1つ）">📱 スマホ版</button>
     </div>
   </header>
 <div class="webnote"><b>ブラウザ版（無料）</b>：<b>wav・mp3 の30秒まで</b>（長いファイルは最初の30秒だけ使います）。カラオケを入れて、録音（または読み込み）→ ボタン1つで補正とMIX → 保存 ができます。音声はこの端末の中だけで処理し、どこにも送りません。曲の全部・動画・AI MIX・詳細MIX（ミキサー・ノート編集など）は Windows の製品版で使えます。<br>スマホでは：横になぞる＝範囲を選ぶ／縦になぞる＝スクロール／長押ししてから動かす＝録音を動かす／2本指＝拡大・縮小。</div>
@@ -1349,6 +1359,24 @@ html.web #btnVid, html.web #vidWin { display:none !important; }
   <div class="info" id="infoVex"></div>
   <div class="inline" style="margin-top:10px"><button class="go" id="vexGo" style="background:var(--ok);color:#0b2a1c">書き出しを始める</button><button id="vexStop" class="hide">中止</button></div>
 </div></div>
+<div class="modal hide" id="mobModal"><div class="mbox" style="max-width:600px">
+  <button id="mobClose" style="float:right">✕ 閉じる</button>
+  <h2 style="margin-top:0">📱 スマホでも使う</h2>
+  <p>製品版をお買い上げの方は、スマホ（iPhone・Android）のブラウザ版でも、曲の最後まで・詳細MIX・AI MIX が使えます。下のボタンで、このパソコン専用のコードを受け取ってください。</p>
+  <div class="inline"><button class="go" id="mobGet">コードを受け取る</button></div>
+  <div class="info" id="mobInfo"></div>
+  <div id="mobResult" class="hide">
+    <div class="mobcode" id="mobCode"></div>
+    <div class="inline"><button id="mobCopy">📋 コードをコピー</button></div>
+    <ol class="mobsteps">
+      <li>スマホで <code id="mobUrl"></code> を開く</li>
+      <li>上の「🔑 製品版のコードを入れる」を押して、このコードを入力</li>
+      <li>「有効にする」を押す → 制限が外れます</li>
+    </ol>
+    <p class="note">コードは<b>スマホ1台でだけ</b>使えます（一度使うと、ほかの端末では使えません）。機種変更のときは BOOTH のメッセージでご連絡ください。このボタンは何度押しても同じコードが出ます。</p>
+  </div>
+  <p class="note">コードを受け取るときだけインターネットを使います。送るのは「このパソコンを見分ける番号を、元に戻せない形にしたもの」だけで、音声・名前・ファイル名は送りません。</p>
+</div></div>
 <div class="modal hide" id="helpModal"><div class="mbox">
   <button id="helpClose" style="float:right">✕ 閉じる</button>
   <h2 style="margin-top:0">使い方</h2>
@@ -1730,7 +1758,7 @@ $('vFormant').addEventListener('input', () => { cur().vFormant = +$('vFormant').
 function applyVoice(t, needProc) {
   clearTimeout(S.vTimer);
   if (!needProc && S.ready) return; // 電話・メガホンなどはその場で切り替わる
-  S.vTimer = setTimeout(() => {
+  S.vSched = true; S.vTimer = setTimeout(() => { S.vSched = false;
     if (!byId(t.id)) return;
     if (S.busy || REC.on) { S.vPending = t; return; }
     if (!S.keyReady || !anyVoice()) { $('infoVoc').innerHTML = '<strong>' + esc(t.name) + '</strong>：ボイスチェンジは、カラオケとメインの声を入れると聴けるようになります。'; return; }
@@ -3321,12 +3349,20 @@ async function writeOut(handle, blob, name) {
 }
 async function saveBlob(blob, name) { const h = await pickFile(name); if (h !== 'cancel') await writeOut(h, blob, name); }
 
+// v4.10.1 書き出しの前に、直前の手直し(ノート編集など)の作り直しが終わるのを待つ。
+// 手直しは少し(約0.8秒)待ってから作り直すので、すぐ書き出すと手直し前の音になることがあった
+async function settleEdits() {
+  const wait = ms => new Promise(r => setTimeout(r, ms)), t0 = performance.now();
+  while (performance.now() - t0 < 3000 && ((typeof NE !== 'undefined' && NE.pending && NE.pending()) || S.vSched)) await wait(50);
+  const t1 = performance.now();
+  while (performance.now() - t1 < 180000 && S.busy && S.queue && S.qi < S.queue.length) await wait(100);
+}
 $('btnSave').addEventListener('click', async () => {
   if (!S.ready) return;
   const name = baseName(S.instName) + '_歌ってみたMIX.wav', h = await pickFile(name);
   if (h === 'cancel') return;
   $('btnSave').disabled = true; $('infoSave').textContent = '書き出しています…（画面下のバーに進み具合が出ます）';
-  await PROG.start('WAV書き出し中');
+  await settleEdits(); await PROG.start('WAV書き出し中');
   try {
     const [L, R] = await fullRender(S.trim, 0, f => PROG.set(f * 0.85, 'ミックス中'));
     await PROG.step(0.86, '音量を整えています');
@@ -3511,10 +3547,10 @@ const NE = (() => {
   function roundRect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
   function hit(t, p) { if (!t || !t.notes) return null; for (const sg of t.notes.segs) { const r = blobRect(t, sg); if (p.x >= r.x0 - 2 && p.x <= r.x1 + 2 && p.y >= r.y - 2 && p.y <= r.y + r.h + 2) return sg; } return null; }
   function beep(n) { if (!$('neAudition').checked) return; const c = getCtx(); c.resume(); const o = c.createOscillator(), e = c.createGain(), t0 = c.currentTime + 0.01; o.type = 'triangle'; o.frequency.value = 440 * Math.pow(2, (n - 69) / 12); e.gain.setValueAtTime(0, t0); e.gain.linearRampToValueAtTime(0.18, t0 + 0.01); e.gain.exponentialRampToValueAtTime(0.001, t0 + 0.35); o.connect(e); e.connect(c.destination); o.start(t0); o.stop(t0 + 0.4); }
-  let applyTimer = 0;
+  let applyTimer = 0, applyPending = false;
   function changed(t, quiet) { // 手直しを反映(その声だけ自動で作り直す)
     t.neGen = (t.neGen || 0) + 1; clean(t); draw(); drawArr();
-    clearTimeout(applyTimer); applyTimer = setTimeout(() => { if (S.ready) applyVoice(t, true); else if (!quiet) $('neHint').textContent = '手直しは「おまかせMIXする」で反映されます。'; }, 300);
+    clearTimeout(applyTimer); applyPending = true; applyTimer = setTimeout(() => { applyPending = false; if (S.ready) applyVoice(t, true); else if (!quiet) $('neHint').textContent = '手直しは「おまかせMIXする」で反映されます。'; }, 300);
   }
   const pt = e => { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
   function setCut(on) { cutMode = on; $('neCut').classList.toggle('on', on); cv.style.cursor = on ? 'crosshair' : ''; $('neHint2').textContent = on ? '✂ ノートの切りたい所をクリック（Alt+クリックでも切れます）。終わったら C キーかもう一度ボタン' : ''; draw(); }
@@ -3661,7 +3697,7 @@ const NE = (() => {
   const focus = k0 => { const t = tr(), sg = t && t.notes && t.notes.segs.find(x => x.k0 === k0); if (!sg) return; NV.l = Math.max(0, sg.k0 * HOP_SEC + t.offsetSec - 1); NV.c = sg.note; syncZoomCtl(); draw(); };
   const boundsOf = () => { const t = tr(); if (!t || !t.notes) return []; const b = cv.getBoundingClientRect(); return bounds(t).map(x => ({ x: b.left + x.x, y: b.top + x.y, next: x.next.k0, prev: x.prev.k0 })); }; // 動作確認用
   const xyOf = (k, m) => { const t = tr(), b = cv.getBoundingClientRect(); return { x: b.left + xOf(t, k * HOP_SEC), y: b.top + yOf(m) }; }; // 動作確認用
-  return { draw, refresh, onNotes, editsOf, dtOf, changed, nudge, rectOf, focus, boundsOf, penOf, setTool, xyOf, setCut, cutAt, joinSel, hasSel: () => vis() && selSegs().length > 0, get sel() { return sel; } };
+  return { pending: () => applyPending, draw, refresh, onNotes, editsOf, dtOf, changed, nudge, rectOf, focus, boundsOf, penOf, setTool, xyOf, setCut, cutAt, joinSel, hasSel: () => vis() && selSegs().length > 0, get sel() { return sel; } };
 })();
 
 // ================= お手本の歌(音痴でも正しい音・リズムに) =================
@@ -3792,7 +3828,7 @@ $('btnStems').addEventListener('click', async () => {
   let dir = null;
   if (window.showDirectoryPicker) { try { dir = await showDirectoryPicker({ mode: 'readwrite' }); } catch (e) { if (e && e.name === 'AbortError') return; } }
   $('btnStems').disabled = true; $('infoSave').textContent = 'パラデータを書き出しています…（画面下のバーに進み具合が出ます）';
-  await PROG.start('パラデータ書き出し中');
+  await settleEdits(); await PROG.start('パラデータ書き出し中');
   try {
     const base = baseName(S.instName), n = S.inst.length, bits = outBits(), files = [];
     files.push([base + '_00_カラオケ.wav', [S.inst.getChannelData(0), S.inst.numberOfChannels > 1 ? S.inst.getChannelData(1) : S.inst.getChannelData(0)]]);
@@ -3819,6 +3855,23 @@ $('btnStems').addEventListener('click', async () => {
 });
 // ================= 使い方 =================
 $('btnHelp').addEventListener('click', () => $('helpModal').classList.remove('hide'));
+// v4.11 スマホ版コード(パソコン版だけ)。受け取りは Go 側(/api/mobilecode)が販売者の受付へ中継する
+(() => {
+  const M = $('mobModal'), close = () => M.classList.add('hide');
+  const WEB = window.UTAMIX_MOBILE_URL || 'https://monowasurei0412.github.io/utamix-web/';
+  $('btnMobile').addEventListener('click', () => { M.classList.remove('hide'); $('mobUrl').textContent = WEB; });
+  $('mobClose').addEventListener('click', close); M.addEventListener('click', e => { if (e.target === M) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  const WHY = { notready: 'まだコードの受付の準備ができていません（販売者の設定待ち）。少し時間をおいてお試しください。', network: 'インターネットにつながりませんでした。つないでからもう一度押してください。', limit: '今日はたくさんのコードが作られたため、受付を止めています。明日もう一度お試しください。', key: 'このアプリの版では受け取れません。最新版をダウンロードしてください。', machine: 'このパソコンを見分けられませんでした。BOOTH のメッセージでご連絡ください。', busy: '混み合っています。少し待ってからもう一度押してください。' };
+  $('mobGet').addEventListener('click', async () => {
+    $('mobGet').disabled = true; $('mobInfo').textContent = 'コードを受け取っています…（最初は10秒ほどかかることがあります）';
+    let r = null; try { r = await (await fetch('/api/mobilecode', { method: 'POST' })).json(); } catch (e) {}
+    $('mobGet').disabled = false;
+    if (r && r.ok && r.code) { $('mobCode').textContent = r.code; $('mobResult').classList.remove('hide'); $('mobInfo').textContent = r.offline ? '（インターネットにつながらないため、前に受け取ったコードを表示しています）' : ''; LOG.add('スマホ版コードを表示'); }
+    else $('mobInfo').textContent = (r && WHY[r.reason]) || 'コードを受け取れませんでした。少し待ってからもう一度押してください。';
+  });
+  $('mobCopy').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('mobCode').textContent); $('mobCopy').textContent = '✓ コピーしました'; setTimeout(() => { $('mobCopy').textContent = '📋 コードをコピー'; }, 1500); } catch (e) {} });
+})();
 $('helpClose').addEventListener('click', () => $('helpModal').classList.add('hide'));
 $('helpModal').addEventListener('click', e => { if (e.target === $('helpModal')) $('helpModal').classList.add('hide'); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') $('helpModal').classList.add('hide'); });
@@ -4917,7 +4970,7 @@ $('btnSaveMp3').addEventListener('click', async () => {
   if (!S.ready || PROG.active()) return;
   const kb = +$('mp3Kbps').value, name = baseName(S.instName) + '_歌ってみたMIX.mp3';
   let h = null; if (window.showSaveFilePicker) { try { h = await showSaveFilePicker({ suggestedName: name, types: [{ description: 'MP3音声', accept: { 'audio/mpeg': ['.mp3'] } }] }); } catch (e) { if (e && e.name === 'AbortError') return; } }
-  $('btnSaveMp3').disabled = true; await PROG.start('MP3書き出し中');
+  $('btnSaveMp3').disabled = true; await settleEdits(); await PROG.start('MP3書き出し中');
   try {
     let [L, R] = await fullRender(S.trim, 0, f => PROG.set(f * 0.45, 'ミックス中'));
     finalizeMaster(L, R, -1.2); // MP3 にすると少しピークが増えるので、少し余裕を持たせる
@@ -5009,7 +5062,7 @@ $('btnSaveFlac').addEventListener('click', async () => {
   if (!S.ready || PROG.active()) return;
   const bits = outBits() === 16 ? 16 : 24, name = baseName(S.instName) + '_歌ってみたMIX.flac';
   let h = null; if (window.showSaveFilePicker) { try { h = await showSaveFilePicker({ suggestedName: name, types: [{ description: 'FLAC音声', accept: { 'audio/flac': ['.flac'] } }] }); } catch (e) { if (e && e.name === 'AbortError') return; } }
-  $('btnSaveFlac').disabled = true; await PROG.start('FLAC書き出し中');
+  $('btnSaveFlac').disabled = true; await settleEdits(); await PROG.start('FLAC書き出し中');
   try {
     const [L, R] = await fullRender(S.trim, 0, f => PROG.set(f * 0.6, 'ミックス中'));
     S.lastExport = finalizeMaster(L, R); if (bits === 16) dither16([L, R]);
@@ -5137,7 +5190,7 @@ var SABI = (() => {
   $('btnSabiPlay').addEventListener('click', () => { if (!rng || !S.ready) return; S.locL = rng[0]; S.locR = rng[1]; seekTo(rng[0]); if (!S.playing) play(); });
   $('btnSabiWav').addEventListener('click', async () => {
     if (!rng || !S.ready) return; const name = baseName(S.instName) + '_サビ_' + Math.round(rng[1] - rng[0]) + '秒.wav', h = await pickFile(name); if (h === 'cancel') return;
-    $('btnSabiWav').disabled = true; await PROG.start('サビだけ書き出し中');
+    $('btnSabiWav').disabled = true; await settleEdits(); await PROG.start('サビだけ書き出し中');
     try { let [L, R] = await fullRender(S.trim, 0, f => PROG.set(f * 0.85, 'ミックス中')); [L, R] = cut([L, R], rng); await PROG.step(0.9, '仕上げ（音量・音割れ・トゥルーピーク）');
       const fm = finalizeMaster(L, R); if (outBits() === 16) dither16([L, R]); await writeOut(h, wavBlob([L, R], outBits()), name);
       $('sabiInfo').innerHTML = 'サビ（' + fmt(rng[0]) + '〜' + fmt(rng[1]) + '）を保存しました：' + fm.lufs.toFixed(1) + ' LUFS・トゥルーピーク ' + fm.tp.toFixed(1) + ' dBTP'; PROG.done('サビの書き出し完了'); S.lastSabi = { len: L.length / SR, lufs: fm.lufs, tp: fm.tp };
@@ -5706,7 +5759,7 @@ const UIMODE = (() => {
   let mode = 'easy', tab = 'rec'; const TABS = ['rec', 'corr', 'mix', 'mixer', 'export'];
   try { mode = localStorage.getItem('utamix.uiMode') || 'easy'; tab = localStorage.getItem('utamix.tab') || 'rec'; } catch (e) {}
   if (mode !== 'pro' && mode !== 'ai') mode = 'easy'; if (!TABS.includes(tab)) tab = 'rec';
-  if (window.UTAMIX_WEB) mode = 'easy'; // ブラウザ版(無料)は かんたんMIX だけ
+  if (window.UTAMIX_WEB && !window.UTAMIX_PRO) mode = 'easy'; // ブラウザ版(無料)は かんたんMIX だけ(製品版コードがあれば全部)
   function apply() {
     document.body.classList.toggle('easy', mode === 'easy'); document.body.classList.toggle('pro', mode === 'pro'); document.body.classList.toggle('ai', mode === 'ai');
     document.querySelectorAll('#uiMode button').forEach(b => b.classList.toggle('on', b.dataset.m === mode));
@@ -5721,7 +5774,7 @@ const UIMODE = (() => {
     try { localStorage.setItem('utamix.uiMode', mode); localStorage.setItem('utamix.tab', tab); } catch (e) {}
     if (typeof AIMIX !== 'undefined') try { AIMIX.onMode(mode); } catch (e) {}
   }
-  function set(m) { mode = window.UTAMIX_WEB ? 'easy' : m === 'pro' || m === 'ai' ? m : 'easy'; apply(); window.scrollTo({ top: 0 }); }
+  function set(m) { mode = window.UTAMIX_WEB && !window.UTAMIX_PRO ? 'easy' : m === 'pro' || m === 'ai' ? m : 'easy'; apply(); window.scrollTo({ top: 0 }); }
   function go(t) { if (mode !== 'pro') mode = 'pro'; tab = t; apply(); window.scrollTo({ top: 0 }); }
   document.querySelectorAll('#uiMode button').forEach(b => b.onclick = () => set(b.dataset.m));
   document.querySelectorAll('#ptabs button').forEach(b => b.onclick = () => go(b.dataset.tab));
@@ -7219,7 +7272,6 @@ ORIG.init();
   const dist = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
   document.addEventListener('touchstart', e => {
     const cv = e.target && e.target.closest && e.target.closest('canvas'); if (!cv || cv.dataset.notouch != null) return;
-    if (window.UTAMIX_TOUCHLOG) console.log('ts', e.touches.length);
     if (e.touches.length >= 2) { // 2本指: 拡大・縮小
       if (st && st.mode === 'drag') fire('mouseup', st.last, cv, { buttons: 0 });
       if (st) clearTimeout(st.lp);
@@ -7265,8 +7317,39 @@ ORIG.init();
 
 // ================= v4.10 ブラウザ版(無料)の制限: 読み込めるのは wav と mp3 だけ・使うのは最初の30秒だけ =================
 // 製品版(EXE)では何もしない。録音も30秒の所で止める。製品版で作った長い作業ファイルも、最初の30秒だけ開く。
-window.WEBLIM = (() => {
+// ---- v4.11 スマホ版コード(ブラウザ版の制限を外す) ----
+// パソコン版で受け取ったコードを入れると、販売者の Google Apps Script で「使用済み」にして、この端末で制限を外す。
+// 一度使ったコードは別の端末では使えない。オフラインでも使える。7日に1回、ネットにつながっていれば有効か確かめる。
+window.UTAMIX_LIC = (() => {
   if (!window.UTAMIX_WEB) return null;
+  const KEY = 'utamix.lic', DK = 'utamix.dev'; let url = window.UTAMIX_LICENSE_URL || '';
+  // 受付の URL がまだ入っていないときは、同じ場所の license.json を読む(販売者は GitHub でこのファイルを書きかえるだけ)
+  async function getUrl() { if (url) return url; try { const o = await (await fetch('license.json', { cache: 'no-store' })).json(); if (o && /^https:\/\/script\.google\.com\//.test(o.url || '')) url = o.url; } catch (e) {} return url; }
+  let lic = null; try { lic = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+  if (lic && !(lic.code && lic.device)) lic = null;
+  function dev() { let d = ''; try { d = localStorage.getItem(DK) || ''; } catch (e) {} if (!/^[0-9a-f]{32}$/.test(d)) { d = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join(''); try { localStorage.setItem(DK, d); } catch (e) {} } return d; }
+  async function call(q) { const r = await fetch(url, { method: 'POST', body: JSON.stringify(q), headers: { 'Content-Type': 'text/plain;charset=utf-8' } }); return r.json(); }
+  const WHY = { notfound: 'このコードは見つかりません。入力をまちがえていないか確かめてください。', used: 'このコードは、ほかの端末ですでに使われています。機種変更などのときは、BOOTH のメッセージでご連絡ください。', revoked: 'このコードは使えなくなっています。BOOTH のメッセージでご連絡ください。', bad: 'コードの形が正しくありません（UTA-XXXX-XXXX-XXXX）。', busy: '混み合っています。少し待ってからもう一度お試しください。', error: 'エラーが起きました。少し待ってからもう一度お試しください。' };
+  async function redeem(code) {
+    if (!(await getUrl())) return { ok: false, msg: 'まだコードの受付の準備ができていません。少し時間をおいてお試しください。' };
+    if (!navigator.onLine) return { ok: false, msg: 'インターネットにつないでから入れてください（最初の1回だけ必要です）。' };
+    let r; try { r = await call({ action: 'redeem', code, device: dev(), ua: /iPhone|iPad/.test(navigator.userAgent) ? 'iOS' : /Android/.test(navigator.userAgent) ? 'Android' : 'PC' }); } catch (e) { return { ok: false, msg: 'つながりませんでした。電波のよい所でもう一度お試しください。' }; }
+    if (!r || !r.ok) return { ok: false, msg: WHY[r && r.reason] || WHY.error };
+    lic = { code: r.code || code, device: dev(), at: Date.now(), checked: Date.now() }; try { localStorage.setItem(KEY, JSON.stringify(lic)); } catch (e) {}
+    return { ok: true, code: lic.code };
+  }
+  async function check(force) {
+    if (!lic || !navigator.onLine || (!force && Date.now() - (lic.checked || 0) < 7 * 864e5) || !(await getUrl())) return;
+    try { const r = await call({ action: 'check', code: lic.code, device: lic.device });
+      if (r && r.ok) { lic.checked = Date.now(); localStorage.setItem(KEY, JSON.stringify(lic)); }
+      else if (r && ['revoked', 'moved', 'reset', 'notfound'].includes(r.reason)) { localStorage.removeItem(KEY); try { sessionStorage.setItem('utamix.licgone', r.reason); } catch (e) {} location.reload(); }
+    } catch (e) {} // つながらないときは何もしない(オフラインでも使える)
+  }
+  return { pro: !!lic, get lic() { return lic; }, redeem, check, dev, getUrl };
+})();
+
+window.WEBLIM = (() => {
+  if (!window.UTAMIX_WEB || window.UTAMIX_PRO) return null;
   const MAX = 30, OK = /\.(wav|mp3)$/i, AUDIO = ['fileInst', 'fileVoc', 'fileRef', 'fileMatch', 'fileOrig'];
   let tm = 0;
   function note(msg) {
@@ -7294,6 +7377,34 @@ window.WEBLIM = (() => {
   BaseAudioContext.prototype.decodeAudioData = function (data, ok, ng) { const p = dec.call(this, data).then(cutBuf); if (ok || ng) p.then(ok, ng); return p; };
   return { MAX, cutBuf, cutArr, note };
 })();
+
+// ---- コードの入力欄(ブラウザ版のお知らせの中) ----
+(() => {
+  const L = window.UTAMIX_LIC; if (!L) return;
+  const note = document.querySelector('.webnote'); if (!note) return;
+  const box = document.createElement('div'); box.className = 'licbox'; note.appendChild(box);
+  let gone = ''; try { gone = sessionStorage.getItem('utamix.licgone') || ''; sessionStorage.removeItem('utamix.licgone'); } catch (e) {}
+  if (L.pro) {
+    box.innerHTML = '<b>🔓 製品版コード：有効</b>（' + L.lic.code.replace(/[<>&]/g, '') + '）　曲の最後まで・動画や m4a・詳細MIX・AI MIX が使えます。';
+    note.classList.add('pro'); setTimeout(() => L.check(false), 3000); return;
+  }
+  box.innerHTML = (gone ? '<div class="licgone">この端末のコードは無効になりました（販売者が別の端末へ移したか、使えなくしたため）。</div>' : '') +
+    '<button type="button" id="licOpen">🔑 製品版のコードを入れる</button><span class="licsub">パソコン版を買った方は、パソコン版の「📱 スマホ版」でコードを受け取れます。</span>' +
+    '<div class="licform hide" id="licForm"><input id="licIn" placeholder="UTA-XXXX-XXXX-XXXX" autocomplete="off" autocapitalize="characters" spellcheck="false"><button type="button" id="licGo">有効にする</button><div id="licMsg" class="licmsg" role="status"></div>' +
+    '<small>コードは1台の端末でだけ使えます。一度入れると、この端末では制限が外れたままになります（ブラウザのデータを消すと、もう一度入力が必要です）。</small></div>';
+  const $l = id => document.getElementById(id);
+  $l('licOpen').onclick = () => { $l('licForm').classList.toggle('hide'); $l('licIn').focus(); };
+  const go = async () => {
+    const v = $l('licIn').value.trim(); if (!v) return;
+    $l('licGo').disabled = true; $l('licMsg').textContent = '確かめています…';
+    const r = await L.redeem(v); $l('licGo').disabled = false;
+    if (r.ok) { $l('licMsg').textContent = '有効になりました。画面を読み込み直します…'; setTimeout(() => location.reload(), 800); }
+    else $l('licMsg').textContent = r.msg;
+  };
+  $l('licGo').onclick = go; $l('licIn').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+})();
+// ブラウザ版の「言葉で直す」は AI(118MB)を置けないので、決まった言い回しのルールで読む
+(() => { if (!window.UTAMIX_WEB) return; const c = document.getElementById('aiAskAI'); if (!c) return; c.checked = false; c.disabled = true; const l = c.closest('label'); if (l) l.insertAdjacentHTML('beforeend', '<small>（ブラウザ版では使えません。決まった言い回しで読みます）</small>'); })();
 </script>
 <script>if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});</script>
 </body>
